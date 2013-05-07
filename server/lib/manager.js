@@ -8,7 +8,9 @@ var
 
 	AVAIL_THRESHOLD	 = 500,
 	CLEANUP_REQS	 = 10000,
-	CLEANUP_CHECKINT = 60000;
+	CLEANUP_CHECKINT = 60000,
+
+	first = null;
 
 /*
  * Manager
@@ -207,6 +209,8 @@ function _clientMessage(c,msg) {
 		if ( !(m.work instanceof Array) || m.work.length == 0 )
 			return self._answer(c,"push",{ error: { code: "EINVWORKL", description: "Invalid work list" } });
 
+		c.type = "client";
+
 		var ids = self._clientPushWork(c,m.work);
 		_debug("Client "+c.id+" pushed this work: ",ids);
 
@@ -217,11 +221,11 @@ function _clientMessage(c,msg) {
 	else if ( m.command == "done" ) {
 
 		if ( c.status == "new" )
-			return self._answer(c,"done",{ error: { code: "EINVCMDSTAT2", description: "You are a new comrade. You had not work"} });
+			return self._answer(c,"done",{ error: {code: "EINVCMDSTAT2", description: "You are a new comrade. You had not work"} });
 		if ( c.busySlots == 0 )
-			return self._answer(c,"done",{ error: { code: "EINVSTAT1", description: "You had no work"} });
+			return self._answer(c,"done",{ error: {code: "EINVSTAT1", description: "You had no work"} });
 		if ( !m.work || !(m.work instanceof Array) )
-			return self._answer(c,"done",{ error: { code: "EINVWORKL", description: "Invalid work list"} });
+			return self._answer(c,"done",{ error: {code: "EINVWORKL", description: "Invalid work list"} });
 
 		var
 			finishedWorks = [];
@@ -236,7 +240,7 @@ function _clientMessage(c,msg) {
 
 		if ( finishedWorks.length > 0 ) {
 			self._clientFinishWork(c,finishedWorks);
-			self._answer(c,"done",{ description: "спасибо" });
+			self._answer(c,"done",{ description: "спасибо for the "+finishedWorks.length+" works" });
 		}
 		else
 			self._answer(c,"done",{ description: "You didn't send nothing interesting sir" });
@@ -263,10 +267,74 @@ function _clientMessage(c,msg) {
 		return self._answer(c,"ping",{ current: new Date() });
 	}
 	else if ( m.command == "mystatus" ) {
-		return self._command(c,"answer",{ to: "status", id: c.id, connected: c.connectTime, current: new Date(), status: c.status, availableSlots: c.availableSlots });
+		return self._command(c,"answer",{
+			to: "status",
+			id: c.id,
+			connected: c.connectTime,
+			current: new Date(),
+			status: c.status,
+			availableSlots: c.availableSlots
+		});
 	}
 	else if ( m.command == "status" ) {
-		return self._command(c,"answer",{ to: "status", queueSize: self.workQueue.length, globalAvailableSlots: self.globalAvailableSlots, canCleanup: self.canCleanup, isClean: self.isClean, finishCount: self.finishCount });
+
+		var
+			agents = [],
+			clients = [];
+
+		for ( var id in self.clients ) {
+			var
+				cl = self.clients[id],
+				item;
+			if ( cl == null )
+				continue;
+
+			item = {id: id, status: cl.status};
+
+			if ( cl.id == c.id )
+				item.you = true;
+
+			if ( cl.type == "agent" ) {
+				item.availableSlots = cl.availableSlots;
+				item.busySlots = cl.busySlots;
+				agents.push(item);
+			}
+			else
+				clients.push(item);
+		}
+
+		return self._command(c,"answer",{
+			to:			"status",
+			queueSize:		self.workQueue.length,
+			globalAvailableSlots:	self.globalAvailableSlots,
+			canCleanup:		self.canCleanup,
+			isClean:		self.isClean,
+			finishCount:		self.finishCount,
+			agents:			agents,
+			clients:		clients
+		});
+
+	}
+	else if ( m.command == "dumpall" ) {
+		var fs = require('fs');
+		fs.writeFile("dump.js",util.inspect(self, false, null),function(err){
+			if ( err )
+				return self._command(c,"dumpall",{ok:false,err: err});
+			_debug("DUMPALL");
+			return self._command(c,"dumpall",{ok:true});
+		});
+		return;
+	}
+	else if ( m.command == "cleanup" ) {
+		self._cleanup();
+		self._command(c,"cleanup",{ok: true});
+		return;
+	}
+	else if ( m.command == "gc" ) {
+		global.gc();
+		self._command(c,"gc",{ok: true});
+		_debug("GARBAGE COLLECTOR");
+		return;
 	}
 	else if ( m.command == "answer" ) {
 
@@ -291,7 +359,7 @@ function _clientMessage(c,msg) {
 
 	}
 
-	return _error(c,{ code: "EUNKNCMD", description: "Unknown command" });
+	return _error(c,{ code: "EUNKNCMD", description: "Unknown command", command: m.command });
 
 }
 
@@ -371,7 +439,9 @@ function _clientRejectWork(c,works,m) {
 		self = this,
 		rejected = { };
 
-	_debug("WARNING: Agent "+c.id+"REJECTED "+works.length+" works ("+JSON.stringify(works)+"). My idea was: "+parseInt(c.availableSlots+m.accepted.length+works.length)+", real: ",m.allocation);
+	if ( m )
+		_debug("WARNING: Agent "+c.id+"REJECTED "+works.length+" works ("+JSON.stringify(works)+"). My idea was: "+parseInt(c.availableSlots+m.accepted.length+works.length)+", real: ",m.allocation);
+
 	works.forEach(function(id){
 		rejected[id] = true;
 	});
@@ -453,7 +523,7 @@ function _clientFinishWork(c,works) {
 	for ( var id in worksByRequester ) {
 		if ( self.clients[id] ) {
 //			worksByRequester[id].forEach(function(w){
-//				console.log("Notifying "+self.clients[id].id+" about work "+w.id);
+//				_debug("Notifying "+self.clients[id].id+" about work "+w.id);
 //			});
 			self._command(self.clients[id],"done",{ work: worksByRequester[id] });
 		}
@@ -592,7 +662,7 @@ function _workDistribute() {
 	// While we have work and available workers
 
 	while ( self.workQueue.length > 0 && assignCount < self.globalAvailableSlots ) {
-//		console.log("Distribute");
+		_debug("Distribute "+self.workQueue.length+", assignCount: "+assignCount+", gas: "+self.globalAvailableSlots);
 
 		// Pick a work, generate a random number between 0 and globalAvailableSlots and see which is the agent for this number
 
@@ -637,11 +707,15 @@ function _workDistribute() {
 			_debug("ERROR: Work "+w.id+" was not assigned!!! Assign count: "+assignCount+", gas: "+self.globalAvailableSlots);
 	}
 
-
 	// Dispatch works for each agent
 
 	for ( var id in agentAssigns )
 		self._workDispatchClient(self.agents[id],agentAssigns[id]);
+
+	// FIXME: Workaround for avoiding (more or less) the problem of garbage collection on the workQueue object
+
+	if ( self.workQueue.length == 0 )
+		self.workQueue = [];
 
 }
 
@@ -724,11 +798,17 @@ function _workNewID() {
  			if ( c.sentWorks[id] == null )
  				delete c.sentWorks[id];
  		}
- 		for ( var i in c.works ) {
+ 		for ( var id in c.works ) {
  			if ( c.works[id] == null )
  				delete c.works[id];
  		}
  	}
+
+ 	if ( this.workQueue.length == 0 )
+		this.workQueue = [];
+
+	if ( global.gc )
+		global.gc();
 
 	this.isClean = true;
 
@@ -745,7 +825,7 @@ function _workNewID() {
 function _debug() {
 /*
 	var
-		args = [_nsec([])];
+		args = [_nsec(first)];
 
 	for ( var x = 0 ; x < arguments.length ; x++ )
 		args.push(arguments[x]);
@@ -755,6 +835,9 @@ function _debug() {
 }
 
 function _nsec(start) {
+
+	if ( first == null )
+		start = first = process.hrtime();
 
 	var
 		diff = process.hrtime(start);

@@ -137,6 +137,7 @@ function streamReceiveChunk(data) {
 				this.status = "header";
 				this.headerBufGot = 0;
 				this.emit('message', (this.format == "binary") ? this.msgBuf : this.msgBuf.toString('utf8') );
+				this.msgBuf = null;
 			}
 			else if ( this.msgBufMissing < 0 ) {
 				this.emit('error',{ code: "EPROTO", description: "Protocol error #2"},true);

@@ -4,7 +4,7 @@ var
 
 	works = [];
 
-for ( var x = 0 ; x < 10000 ; x++ ) {
+for ( var x = 0 ; x < 100000 ; x++ ) {
 	works.push(function(handler){
 		var r = 3+3;
 		handler(null,r);

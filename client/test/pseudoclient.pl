@@ -7,6 +7,7 @@ sub _format($) {
 	my $j = eval { to_json(from_json($_[0])) };
 	$j || print STDERR "$@\n";
 	$j || return undef;
+	print STDERR "Sending: ".to_json(from_json($_[0]))."\n";
 	return pack('N',length($j)).$j;
 }
 sub _unformat($) {
@@ -27,16 +28,6 @@ while ( <> ) {
 	print $sock $msg;
 
 	my $b;
-	read($sock,$b,4);
-	my $len = unpack('N',$b);
-	read($sock,$b,$len);
-	print "$b\n";
-
-	read($sock,$b,4);
-	my $len = unpack('N',$b);
-	read($sock,$b,$len);
-	print "$b\n";
-
 	read($sock,$b,4);
 	my $len = unpack('N',$b);
 	read($sock,$b,$len);
