@@ -419,7 +419,7 @@ function _error(error) {
 // Debug
 
 function _debug() {
-/*
+
 	var
 		args = [_nsec([])];
 
@@ -427,7 +427,7 @@ function _debug() {
 		args.push(arguments[x]);
 
 	console.log.apply(null,args);
-*/
+
 }
 
 function _nsec(start) {

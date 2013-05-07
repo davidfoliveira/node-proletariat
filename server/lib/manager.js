@@ -201,7 +201,9 @@ function _clientMessage(c,msg) {
 
 		_debug("Comrade "+c.id+" offered "+m.slots+" work slots. He will be considered an agent");
 		self._answer(c,"offer",{ description: "You are very nice comrade", you: c.id });
-		return self._workDistribute();
+
+		return setTimeout(function(){ self._workDistribute(); },parseInt(Math.random()*100));
+//		return process.nextTick(function(){ self._workDistribute(); });
 
 	}
 	else if ( m.command == "push" ) {
@@ -215,7 +217,8 @@ function _clientMessage(c,msg) {
 		_debug("Client "+c.id+" pushed this work: ",ids);
 
 		self._answer(c,"push",{ work: ids });
-		return self._workDistribute();
+		return setTimeout(function(){ self._workDistribute(); },parseInt(Math.random()*100));
+//		return process.nextTick(function(){ self._workDistribute(); });
 
 	}
 	else if ( m.command == "done" ) {
@@ -247,7 +250,8 @@ function _clientMessage(c,msg) {
 
 		// Distribute!
 
-		self._workDistribute();
+		setTimeout(function(){ self._workDistribute(); },parseInt(Math.random()*100));
+//		process.nextTick(function(){ self._workDistribute(); });
 
 		// Cleanup
 
@@ -823,7 +827,7 @@ function _workNewID() {
 // Debug
 
 function _debug() {
-/*
+
 	var
 		args = [_nsec(first)];
 
@@ -831,7 +835,7 @@ function _debug() {
 		args.push(arguments[x]);
 
 	console.log.apply(null,args);
-*/
+
 }
 
 function _nsec(start) {
