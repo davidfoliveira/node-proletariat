@@ -10,6 +10,7 @@ var
 	CLEANUP_REQS	 = 100,
 	CLEANUP_CHECKINT = 5000,
 	CON_RETRYTIME	 = 2000,
+	DEBUG		 = false,
 
 	seq = 1;
 
@@ -87,6 +88,10 @@ function Agent(opts) {
 	this._cleanupProcess = _cleanupProcess;
 
 	this._cleanupInterval = setInterval(function(){self._cleanupProcess()},this.CLEANUP_CHECKINT);
+
+	// Debug
+
+	DEBUG		= opts.DEBUG || false;
 
 }
 util.inherits(Agent, events.EventEmitter);
@@ -430,7 +435,10 @@ function _error(error) {
 // Debug
 
 function _debug() {
-/*
+
+	if ( !DEBUG )
+		return;
+
 	var
 		args = [_nsec([])];
 
@@ -438,7 +446,7 @@ function _debug() {
 		args.push(arguments[x]);
 
 	console.log.apply(null,args);
-*/
+
 }
 
 function _nsec(start) {
@@ -485,6 +493,4 @@ function _cleanup() {
 
 // Self object
 
-exports.agent = {
-	Agent: Agent
-};
+exports.Agent = Agent;

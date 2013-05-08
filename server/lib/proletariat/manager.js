@@ -10,6 +10,7 @@ var
 	CLEANUP_REQS	 = 10000,
 	CLEANUP_CHECKINT = 60000,
 	DISTRIB_RANDMAX	 = 400,
+	DEBUG		 = false,
 
 	first = null;
 
@@ -32,22 +33,37 @@ var
  *   - error(err)
  */
 
-function Manager() {
+function Manager(opts) {
 
 	var
 		self = this;
 
-	// Properties
+	// Options
+
+	if ( opts == null )
+		opts = {};
+
+	// Variable properties
+
+	this.AVAIL_THRESHOLD = opts.AVAIL_THRESHOLD || AVAIL_THRESHOLD;
+	this.CLEANUP_REQS = opts.CLEANUP_REQS || CLEANUP_REQS;
+	this.CLEANUP_CHECKINT = opts.CLEANUP_CHECKINT || CLEANUP_CHECKINT;
+	this.DISTRIB_RANDMAX = opts.DISTRIB_RANDMAX || DISTRIB_RANDMAX;	
+
+	// Fixed properties
 
 	this.s = null;
-	this.workQueue = [];
-	this.works = { };
-	this.clients = { };
-	this.agents = { };
 	this.globalAvailableSlots = 0;
 	this.finishCount = 0;
 	this.canCleanup = false;
 	this.isClean = true;
+
+	// Data support
+
+	this.workQueue = [];
+	this.works = { };
+	this.clients = { };
+	this.agents = { };
 
 	// Methods
 
@@ -71,6 +87,10 @@ function Manager() {
 	this._answer = _answer;
 
 	this._cleanupInterval = setInterval(function(){self._cleanupProcess()},CLEANUP_CHECKINT);
+
+	// Debug
+
+	DEBUG = opts.DEBUG || false;
 
 }
 util.inherits(Manager, events.EventEmitter);
@@ -837,6 +857,9 @@ function _workNewID() {
 
 function _debug() {
 
+	if ( !DEBUG )
+		return;
+
 	var
 		args = [_nsec(first)];
 
@@ -861,6 +884,4 @@ function _nsec(start) {
 
 // Self object
 
-exports.manager = {
-	Manager: Manager
-};
+exports.Manager = Manager;
