@@ -1,6 +1,7 @@
 var
 	Proletariant	= require('../lib/proletariat-client').Client;
 	proletariat	= new Proletariant("127.0.0.1"),
+//	proletariat	= new Proletariant("nheca-web01.blogs.bk.sapo.pt"),
 
 	works = [];
 

@@ -14,14 +14,14 @@ sub _unformat($) {
 }
 
 my $sock = new IO::Socket::INET (
-	PeerAddr => '127.0.0.1',
+	PeerAddr => $ARGV[0] || '127.0.0.1',
 	PeerPort => '1917',
 	Proto => 'tcp',
 );
 die "Could not create socket: $!\n" unless $sock;
 warn "Connected!\n";
 
-while ( <> ) {
+while ( <STDIN> ) {
 	s/\r?\n//g;
 	my $msg = _format($_) || next;
 	print STDERR "Sending..\n";

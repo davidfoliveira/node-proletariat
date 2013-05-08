@@ -836,7 +836,7 @@ function _workNewID() {
 // Debug
 
 function _debug() {
-/*
+
 	var
 		args = [_nsec(first)];
 
@@ -844,7 +844,7 @@ function _debug() {
 		args.push(arguments[x]);
 
 	console.log.apply(null,args);
-*/
+
 }
 
 function _nsec(start) {

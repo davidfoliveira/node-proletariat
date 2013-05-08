@@ -11,9 +11,13 @@ var
 if ( process.argv.length > 2 )
 	slots = parseInt(process.argv[2]);
 
+
 // New agent
 
-agents.push(new Agent(slots));
+agents.push(new Agent({
+	slots: slots,
+//	ANSWER_THRESHOLD: 200
+}));
 agents.forEach(function(agent){
 	agent.start();
 

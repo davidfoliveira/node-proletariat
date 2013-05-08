@@ -6,10 +6,11 @@ var
 	net	= require('net'),
 	Stream	= require('./stream').stream.Stream,
 
+	SLOTS		 = 10,
 	CLEANUP_REQS	 = 100,
 	CLEANUP_CHECKINT = 5000,
 	CON_RETRYTIME	 = 2000,
-	ANSWER_THRESHOLD = 2500,
+//	ANSWER_THRESHOLD = 1,
 
 	seq = 1;
 
@@ -33,27 +34,41 @@ var
  *   - close()
  */
 
-function Agent(slots) {
+function Agent(opts) {
 
 	var
 		self = this;
 
-	// Properties
+	// Options
 
-	this.id = seq++;
-	this.s = null;
-	this.status = "offline";
-	this.stream = null;
-	this.lastCommand = null;
-	this.maxSlots = slots || 10;
-	this.finishCount = 0;
-	this.isClean = true;
+	if ( opts == null )
+		opts = { };
 
-	this.workingQueue = {};
-	this.availableSlots = this.maxSlots;
-	this.answerList = [];
+	// Variable properties
 
-	this.resultCache = { };
+	this.maxSlots		= opts.slots || SLOTS;
+	this.CLEANUP_REQS	= opts.CLEANUP_REQS || CLEANUP_REQS;
+	this.CLEANUP_CHECKINT	= opts.CLEANUP_CHECKINT || CLEANUP_CHECKINT;
+	this.CON_RETRYTIME	= opts.CON_RETRYTIME || CON_RETRYTIME;
+	this.ANSWER_THRESHOLD	= opts.ANSWER_THRESHOLD || parseInt(opts.slots*0.25);
+
+	// Fixed properties
+
+	this.id			= seq++;
+	this.s			= null;
+	this.status		= "offline";
+	this.stream		= null;
+	this.lastCommand	= null;
+	this.finishCount	= 0;
+	this.isClean		= true;
+	this.availableSlots	= this.maxSlots;
+
+	// Data support
+
+	this.workingQueue	= {};
+	this.answerList		= [];
+
+	this.resultCache	= { };
 
 	// Methods
 
@@ -71,7 +86,7 @@ function Agent(slots) {
 	this._cleanup = _cleanup;
 	this._cleanupProcess = _cleanupProcess;
 
-	this._cleanupInterval = setInterval(function(){self._cleanupProcess()},CLEANUP_CHECKINT);
+	this._cleanupInterval = setInterval(function(){self._cleanupProcess()},this.CLEANUP_CHECKINT);
 
 }
 util.inherits(Agent, events.EventEmitter);
@@ -108,10 +123,10 @@ function _agentConnect() {
 	self.s.on('error',function(err){
 		if ( err.code ) {
 			if ( err.code == "ECONNREFUSED" ) {
-				_debug("Could not connect to manager. Retrying in "+CON_RETRYTIME+"ms...");
+				_debug("Could not connect to manager. Retrying in "+self.CON_RETRYTIME+"ms...");
 				return setTimeout(function(){
 					return self._agentConnect();
-				}, CON_RETRYTIME);
+				}, self.CON_RETRYTIME);
 			}
 		}
 		else {
@@ -344,14 +359,14 @@ function _agentFinishWork(w,result) {
 
 	self.answerList.push({id: w.id, result: w.result });
 
-	if ( self.answerList.length >= ANSWER_THRESHOLD || self.availableSlots == self.maxSlots ) {
+	if ( self.answerList.length >= self.ANSWER_THRESHOLD || self.availableSlots == self.maxSlots ) {
 		self._command("done",{work: self.answerList});
 		self.answerList = [];
 	}
 
 	// Cleanup ?
 
-	if ( (++self.finishCount % CLEANUP_REQS) == 0 ) {
+	if ( (++self.finishCount % self.CLEANUP_REQS) == 0 ) {
 		self.finishCount = 0;
 		self._cleanup();
 	}
@@ -376,7 +391,7 @@ function _agentOnDisconnect() {
 	var
 		self = this;
 
-	_debug("[agent #"+this.id+"] Comrade manager disconnected, reseting and reconnecting in "+CON_RETRYTIME+"ms...");
+	_debug("[agent #"+this.id+"] Comrade manager disconnected, reseting and reconnecting in "+self.CON_RETRYTIME+"ms...");
 
 	this.status = "offline";
 
@@ -386,7 +401,7 @@ function _agentOnDisconnect() {
 
 	setTimeout(function(){
 		self._agentConnect();
-	}, CON_RETRYTIME);
+	}, self.CON_RETRYTIME);
 
 }
 
