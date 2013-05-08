@@ -9,6 +9,7 @@ var
 	AVAIL_THRESHOLD	 = 500,
 	CLEANUP_REQS	 = 10000,
 	CLEANUP_CHECKINT = 60000,
+	DISTRIB_RANDMAX	 = 400,
 
 	first = null;
 
@@ -160,6 +161,7 @@ function _clientInit(con) {
 	});
 
 	_debug("Comrade "+c.id+" connected");
+	console.log("Comrade "+c.id+" connected");
 
 }
 
@@ -202,7 +204,7 @@ function _clientMessage(c,msg) {
 		_debug("Comrade "+c.id+" offered "+m.slots+" work slots. He will be considered an agent");
 		self._answer(c,"offer",{ description: "You are very nice comrade", you: c.id });
 
-		return setTimeout(function(){ self._workDistribute(); },parseInt(Math.random()*100));
+		return setTimeout(function(){ self._workDistribute(); },parseInt(Math.random()*DISTRIB_RANDMAX));
 //		return process.nextTick(function(){ self._workDistribute(); });
 
 	}
@@ -214,10 +216,10 @@ function _clientMessage(c,msg) {
 		c.type = "client";
 
 		var ids = self._clientPushWork(c,m.work);
-		_debug("Client "+c.id+" pushed this work: ",ids);
+//		_debug("Client "+c.id+" pushed this work: ",ids);
 
 		self._answer(c,"push",{ work: ids });
-		return setTimeout(function(){ self._workDistribute(); },parseInt(Math.random()*100));
+		return setTimeout(function(){ self._workDistribute(); },parseInt(Math.random()*DISTRIB_RANDMAX));
 //		return process.nextTick(function(){ self._workDistribute(); });
 
 	}
@@ -237,11 +239,12 @@ function _clientMessage(c,msg) {
 			if ( typeof(aw) != "object" || !aw.id || !aw.result || !self.works[aw.id] || self.works[aw.id].status != "running" )
 				return;
 
-			_debug("Comrade "+c.id+" finished work after "+_nsec(self.works[aw.id].pushTime)+"ms: "+aw.id);
+//			_debug("Comrade "+c.id+" finished work after "+_nsec(self.works[aw.id].pushTime)+"ms: "+aw.id);
 			finishedWorks.push(aw);
 		});
 
 		if ( finishedWorks.length > 0 ) {
+			_debug("Comrade "+c.id+" finished "+finishedWorks.length+" works in "+_nsec(self.works[finishedWorks[0].id].pushTime)+"ms");
 			self._clientFinishWork(c,finishedWorks);
 			self._answer(c,"done",{ description: "спасибо for the "+finishedWorks.length+" works" });
 		}
@@ -250,7 +253,7 @@ function _clientMessage(c,msg) {
 
 		// Distribute!
 
-		setTimeout(function(){ self._workDistribute(); },parseInt(Math.random()*100));
+		setTimeout(function(){ self._workDistribute(); },parseInt(Math.random()*DISTRIB_RANDMAX));
 //		process.nextTick(function(){ self._workDistribute(); });
 
 		// Cleanup
@@ -391,9 +394,11 @@ function _clientPushWork(c,items) {
 		workIDs.push(w.id);
 		self.works[w.id] = w;
 		self.workQueue.push(w);
-		_debug("Pushed new work #"+w.id);
+//		_debug("Pushed new work #"+w.id);
 
 	});
+
+	_debug("Pushed "+workIDs.length+" new works");
 
 	return workIDs;
 
@@ -495,9 +500,6 @@ function _clientFinishWork(c,works) {
 		var
 			w = self.works[aw.id];
 
-		if ( w == null )
-			return;
-
 		// Map by requester
 
 		if ( w.requester ) {
@@ -508,11 +510,11 @@ function _clientFinishWork(c,works) {
 
 		// How much time did it take ?
 
-		_debug("Work #"+w.id+" took "+_nsec(w.pushTime)+"ms to be finished");
+//		_debug("Work #"+w.id+" took "+_nsec(w.pushTime)+"ms to be finished");
 
 		// Emit finish events
 
-		self.emit('finish',w.id,aw.result);
+//		self.emit('finish',w.id,aw.result);
 //		delete self.works[w.id];
 		self.works[w.id] = null;
 //		delete c.works[w.id];
@@ -554,6 +556,7 @@ function _clientDestroy(c,subv) {
 		_debug("Client "+c.id+" had subversive ideas and was annihilated");
 	else
 		_debug("Comrade "+c.id+" has disconnected");
+	console.log("Comrade "+c.id+" has disconnected");
 
 
 	// If we sent works for him that he didn't accept, act like he rejected them
@@ -666,7 +669,7 @@ function _workDistribute() {
 	// While we have work and available workers
 
 	while ( self.workQueue.length > 0 && assignCount < self.globalAvailableSlots ) {
-		_debug("Distribute "+self.workQueue.length+", assignCount: "+assignCount+", gas: "+self.globalAvailableSlots);
+//		_debug("Distribute "+self.workQueue.length+", assignCount: "+assignCount+", gas: "+self.globalAvailableSlots);
 
 		// Pick a work, generate a random number between 0 and globalAvailableSlots and see which is the agent for this number
 
@@ -694,7 +697,7 @@ function _workDistribute() {
 			if ( randFactor <= count ) {
 //				console.log(w);
 
-				_debug("Work "+w.id+" assigned to agent "+c.id+" after "+_nsec(w.pushTime)+"ms");
+//				_debug("Work "+w.id+" assigned to agent "+c.id+" after "+_nsec(w.pushTime)+"ms");
 
 				if ( agentAssigns[c.id] == null ) {
 					agentAssigns[c.id] = [];
@@ -711,15 +714,21 @@ function _workDistribute() {
 			_debug("ERROR: Work "+w.id+" was not assigned!!! Assign count: "+assignCount+", gas: "+self.globalAvailableSlots);
 	}
 
+	_debug("Assigned "+assignCount+" works to "+Object.keys(agentAssigns).length+" agents. Dispatching...");
+
 	// Dispatch works for each agent
 
 	for ( var id in agentAssigns )
 		self._workDispatchClient(self.agents[id],agentAssigns[id]);
 
+	_debug("Dispatched "+assignCount+" works");
+
 	// FIXME: Workaround for avoiding (more or less) the problem of garbage collection on the workQueue object
 
-	if ( self.workQueue.length == 0 )
+	if ( self.workQueue.length == 0 ) {
+		_debug("Everything done");
 		self.workQueue = [];
+	}
 
 }
 
@@ -827,7 +836,7 @@ function _workNewID() {
 // Debug
 
 function _debug() {
-
+/*
 	var
 		args = [_nsec(first)];
 
@@ -835,7 +844,7 @@ function _debug() {
 		args.push(arguments[x]);
 
 	console.log.apply(null,args);
-
+*/
 }
 
 function _nsec(start) {

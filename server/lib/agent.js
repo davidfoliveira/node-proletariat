@@ -9,7 +9,7 @@ var
 	CLEANUP_REQS	 = 100,
 	CLEANUP_CHECKINT = 5000,
 	CON_RETRYTIME	 = 2000,
-	ANSWER_THRESHOLD = 1000,
+	ANSWER_THRESHOLD = 2500,
 
 	seq = 1;
 
@@ -419,7 +419,7 @@ function _error(error) {
 // Debug
 
 function _debug() {
-
+/*
 	var
 		args = [_nsec([])];
 
@@ -427,7 +427,7 @@ function _debug() {
 		args.push(arguments[x]);
 
 	console.log.apply(null,args);
-
+*/
 }
 
 function _nsec(start) {
