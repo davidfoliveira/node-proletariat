@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 var
-	heapdump = require('heapdump'),
+//	heapdump = require('heapdump'),
 	Manager	= require('./lib/manager').manager.Manager,
 	manager	= new Manager();
 
