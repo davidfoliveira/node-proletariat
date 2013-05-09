@@ -1,6 +1,6 @@
 var
-	Proletariant	= require('../lib/proletariat-client').Client;
-	proletariat	= new Proletariant("127.0.0.1");
+	Proletariat	= require('../lib/proletariat').Client;
+	proletariat	= new Proletariat("127.0.0.1");
 
 
 

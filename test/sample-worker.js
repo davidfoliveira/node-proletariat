@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 
 var
-	Agent	= require('../lib/proletariat').Agent,
-	agent	= null,
+	Worker	= require('../lib/proletariat').Worker,
+	worker	= null,
 
 	opts	= {
 		slots: 10,
@@ -23,19 +23,19 @@ if ( process.argv.length > 3 )
 
 
 
-// New agent
+// New worker
 
-agent = new Agent(opts);
+worker = new Worker(opts);
 
 // Start it
 
-agent.start();
+worker.start();
 
 
 // On new work request
 
-agent.on('work',function(w,handler){
-//	console.log("Agent "+agent.id+" got this work: ",w);
+worker.on('work',function(w,handler){
+//	console.log("Worker "+worker.id+" got this work: ",w);
 
 	// Function ? Run it!
 
