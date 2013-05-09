@@ -68,7 +68,7 @@ Worker support this options:
 
 `CON_RETRYTIME` is the time (ms) for waiting before reconnecting to server. Default: `2000`
 
-`ANSWER_THRESHOLD` is the number of work answers to keep in memory before answering to server. Default: 25% of the `slots` number.
+`ANSWER_THRESHOLD` is the number of work answers to keep in memory before answering to server. Default: `1`.
 
 
 # Running a client and pushing work
