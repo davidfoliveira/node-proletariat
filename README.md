@@ -15,7 +15,7 @@ Running supplied manager:
 Making your own manager daemon:
 
 	var
-	    Manager = require('../lib/proletariat').Manager,
+	    Manager = require('proletariat').Manager,
 	    manager = new Manager();
 
 	// Start
@@ -40,7 +40,7 @@ Manager support this options:
 Create a new worker file and run it (multiple instances of it, if you want):
 
 	var
-	    Worker = require('../lib/proletariat').Worker,
+	    Worker = require('proletariat').Worker,
 	    worker = new Worker({slots: 100, host: "127.0.0.1"});
 
 	// Start it
@@ -76,7 +76,7 @@ Worker support this options:
 Create a new client file and run it:
 
 	var
-	    Proletariat = require('../lib/proletariat').Client,
+	    Proletariat = require('proletariat').Client,
 	    proletariat = new Proletariat("127.0.0.1");
 
 	proletariat.work([{some:"work"}],function(err,res){
