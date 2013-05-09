@@ -18,9 +18,9 @@ Making your own manager:
 	    Manager = require('../lib/proletariat').Manager,
 	    manager = new Manager();
 
-// Start
+	// Start
 
-manager.start();
+	manager.start();
 
 
 # Running workers
