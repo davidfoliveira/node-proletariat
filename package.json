@@ -9,7 +9,7 @@
   },
   "main": "./lib/proletariat",
   "bin": {
-    "replaceme": "./bin/manager"
+    "replaceme": "./bin/manager.js"
   },
   "dependencies": {},
   "devDependencies": {},
