@@ -16,6 +16,5 @@ proletariat.work({bli: true},function(err,res){
 		console.log("Error running work: ",err);
 		return;
 	}
-
 	console.log("Result: ",res);
 });

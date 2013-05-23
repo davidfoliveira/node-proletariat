@@ -1,6 +1,6 @@
 var
 	Proletariat	= require('../lib/proletariat').Client;
-	proletariat	= new Proletariat({host: "127.0.0.1",DEBUG:true}),
+	proletariat	= new Proletariat({host: "127.0.0.1"}),
 
 	works = [];
 
@@ -11,12 +11,14 @@ for ( var x = 0 ; x < 1000 ; x++ ) {
 	});
 }
 
-proletariat.work(works,function(err,res){
+proletariat.workIndividual(works,{},function(err,res){
 	if ( err ) {
 		console.log("Error running work: ",err);
 		return;
 	}
 
-	console.log("Result: ",res.length);
-	process.exit(0);
+	console.log("Result: ",res);
+//	process.exit(0);
+},function(err,res){
+	console.log("Everything done");
 });
