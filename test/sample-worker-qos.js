@@ -5,9 +5,12 @@ var
 	worker	= null,
 
 	opts	= {
-		slots: 10,
-		host: "127.0.0.1",
-		DEBUG: true
+		slots: 30,
+		prioritySlots: {
+			1: 10,		/* 10 slots for priority >= 1 */
+			2: 5,		/* 5 slots for priority >= 2 */
+		},
+		host: "127.0.0.1"
 	};
 
 

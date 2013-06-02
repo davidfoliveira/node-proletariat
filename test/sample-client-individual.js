@@ -4,6 +4,8 @@ var
 
 	works = [];
 
+// Generate 1000 works
+
 for ( var x = 0 ; x < 1000 ; x++ ) {
 	works.push(function(handler){
 		var r = 3+3;

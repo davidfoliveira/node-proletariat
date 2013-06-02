@@ -1,8 +1,7 @@
 var
 	Proletariat	= require('../lib/proletariat').Client;
-	proletariat	= new Proletariat({host: "127.0.0.1"});
-
-
+	proletariat	= new Proletariat({host: "127.0.0.1"}),
+	done		= 0;
 
 proletariat.work([{bla: true},{ble: true}],function(err,res){
 	if ( err ) {
@@ -10,6 +9,8 @@ proletariat.work([{bla: true},{ble: true}],function(err,res){
 		return;
 	}
 	console.log("Result: ",res);
+	if ( ++done == 2 )
+		process.exit(0);
 });
 proletariat.work({bli: true},function(err,res){
 	if ( err ) {
@@ -17,4 +18,6 @@ proletariat.work({bli: true},function(err,res){
 		return;
 	}
 	console.log("Result: ",res);
+	if ( ++done == 2 )
+		process.exit(0);
 });

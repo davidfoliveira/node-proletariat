@@ -1,15 +1,15 @@
 var
 	Proletariat	= require('../lib/proletariat').Client;
-	proletariat	= new Proletariat({host: "127.0.0.1"});
+	proletariat	= new Proletariat({host: "127.0.0.1"}),
 
+	lowpri = [];
+
+for ( var x = 0 ; x < 18 ; x++ )
+	lowpri.push({bla:"ble"});
 
 proletariat.work(
-	/* Execute remotely */
-	function(handler){
-		var r = 2+2;
-		handler(null,r);
-	},
-
+	lowpri,
+	{priority: 0},
 	function(err,res,w){
 		if ( err ) {
 			console.log("Error running work: ",err);
