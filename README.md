@@ -105,14 +105,43 @@ and this methods:
 `workIndividual(workGroup,options,workCallback,groupCallback)` for pushing a work group and calling workCallback for each finished work and groupCallback when all the work group has finished. Options are the same as for `work()`.
 
 
+# How does it work ?
 
-# Timeouts
+![Architecture](https://cld.pt/dl/download/e930e1bf-d240-46f9-ac5e-38ae0fdcca67/howdoesitwork.png?download=true)
+
+From top to bottom:
+
+Clients just connect to the manager, push some works and wait for the answer.
+
+Manager receives connections from clients and workers. If the client makes an offer (work force) he's then called a `worker`. It the client pushes some work, he will be treated as a simple client. When a client pushes some work, it will be registered on a specific queue, according to the work's priority and then, when possible, will be assigned to an available worker. When the worker finishes doing that task, answers to the manager, who sends it back to the client.
+
+
+## Assigning
+
+The default work->worker assigning function tends to balance the workload on all the workers, being more probable to assign a task to a free worker than a busiest one. Anyway, being the function based on Math.random(), something else can happen.
+
+Some systems may need to implement their own assigning function. Example:
+
+	manager.workSelectWorker = function(work,workers,totalAvailable) {
+
+	        var
+	                comrades = Object.keys(workers);
+
+	        return this.workers[comrades[parseInt(Math.random()*comrades.length)]];
+
+	};
+
+	// Start
+
+	manager.start();
+
+
+## Timeouts
 
 `client.work()` and `client.workIndividual` support specifying a `timeout` which will be the running timeout. It starts counting at the same moment that works starts running on the worker.
 
 
-
-# Priorities and guarantees
+## Priorities and guarantees
 
 `client.work()` and `client.workIndividual` support specifying a priority for the work or work group. High priority works will be firstly assigned to the workers when they have available slots, however, without guarantees that they will be immediatelly assigned.
 
