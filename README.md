@@ -138,7 +138,7 @@ Some systems may need to implement their own assigning function. Example:
 
 ## Timeouts
 
-`client.work()` and `client.workIndividual` support specifying a `timeout` which will be the running timeout. It starts counting at the same moment that works starts running on the worker.
+`client.work()` and `client.workIndividual()` support specifying a `timeout` which will be the running timeout. It starts counting at the same moment that work starts running on the worker.
 
 
 ## Priorities and guarantees
