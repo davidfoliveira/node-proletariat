@@ -1,6 +1,6 @@
 # proletariat: distributed job processing on node.js made simple
 
-`proletariat` is a simple and distributed job processing software made in node.js.
+`proletariat` is an easy-to-use and distributed job processing software made in node.js.
 
 # Installing
 
