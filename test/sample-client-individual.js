@@ -4,9 +4,9 @@ var
 
 	works = [];
 
-// Generate 1000 works
+// Generate 10 works
 
-for ( var x = 0 ; x < 1000 ; x++ ) {
+for ( var x = 0 ; x < 10 ; x++ ) {
 	works.push(function(handler){
 		var r = 3+3;
 		handler(null,r);
@@ -23,4 +23,5 @@ proletariat.workIndividual(works,{},function(err,res){
 //	process.exit(0);
 },function(err,res){
 	console.log("Everything done");
+	process.exit(0);
 });

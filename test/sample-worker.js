@@ -42,9 +42,20 @@ worker.on('work',function(w,handler){
 	if ( typeof(w.args) == "function" )
 		return w.args(handler);
 
-	// Not a function
 
-	setTimeout(function(){
-		handler(null,"THIS IS THE RESULT OF "+w.id+"!")
-	},5000);
+	// Sleep
+
+	if ( w.args.fn == "sleep" ) {
+		return setTimeout(function(){
+			handler(null,"I was waiting "+w.args.sleep+" seconds");
+		}, w.args.sleep*1000);
+	}
+
+	// Something else
+
+	else {
+		setTimeout(function(){
+			handler(null,"THIS IS THE RESULT OF "+w.id+"!")
+		},5000);
+	}
 });
