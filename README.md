@@ -138,7 +138,13 @@ Some systems may need to implement their own assigning function. Example:
 
 ## Timeouts
 
-`client.work()` and `client.workIndividual()` support specifying a `timeout` which will be the running timeout. It starts counting at the same moment that work starts running on the worker.
+### Running timeout
+
+`client.work()` and `client.workIndividual()` support specifying a `timeout` option, in milliseconds, which will limit the running time of the work(s). It starts counting at the same moment that the work(s) start running on the worker. If the running time exceeds the `timeout` value, the error `{ code: "ETO" }` will be returned.
+
+### Assigning timeout
+
+`client.work()` and `client.workIndividual()` support specifying an `assigntimeout` option, in milliseconds, which will limit the time taken for assigning the work(s) to a worker. If the work(s) take more than the specified time, the error `{ code: 'EATO' }` will be returned and an `assigntimeout` event will be emitted on the manager. 
 
 
 ## Priorities and guarantees
@@ -154,8 +160,31 @@ But, if you were paying attention, you could notice that high priority tasks can
 For keeping this guarantees, you should set the manager option `SACRED_GUARANTEES` to true. This will make sure that if higher priority works will start going out of their guaranteed space, they will only steal slots from the lowest priority range (usually the range >= 0), saving the other guarantees. Again, using the example, but now setting manager `SACRED_GUARANTEES` to true, we will be defining the limit of 50 to works with priority >= 0 and < 1, 80 to works with priority >= 1 and < 2 and 70 to works with priority >= 2.
 
 
+## System messages
+
+The client supports sending system messages to the manager and to all the workers by using `systemMessage(msg,callBack)` method. The supplied message will be sent and `sysmsg` event will be fired on the manager and on all the workers. The `callBack` function will be called only when everybody got the message.
+
+Example (manager):
+
+	manager.on('sysmsg',function(msg){
+	   console.log("System message: ",msg);
+	});
+
+Example (worker):
+
+	worker.on('sysmsg',function(msg){
+	   console.log("System message: ",msg);
+	});
+
+Example (client):
+
+	client.systemMessage({"do":"something"},function(){
+	   console.log("Everybody got the message");
+	});
+
+
 ## Multiprocessor
 
-On the current state, the three components of proletariat are single threaded. However, you can launch how many worker processes as you wish, making better use of multriprocessor computers.
+On the current state, the three components of proletariat are single threaded. However, you can launch how many worker processes as you wish, making better use of multiprocessor machines.
 
-In the future, the manager process will naturally support running with multiple processes at the same time.
+In the future, the manager process will naturally support running on multiple processes at the same time.
