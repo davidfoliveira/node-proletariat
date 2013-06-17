@@ -58,3 +58,10 @@ worker.on('work',function(w,handler){
 		},5000);
 	}
 });
+
+
+// System messages
+
+worker.on('sysmsg',function(msg){
+	console.log("System message: ",msg);
+});
