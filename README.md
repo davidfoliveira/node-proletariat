@@ -107,7 +107,7 @@ and this methods:
 
 # How does it work ?
 
-![Architecture](https://cld.pt/dl/download/e930e1bf-d240-46f9-ac5e-38ae0fdcca67/howdoesitwork.png?download=true)
+![Architecture](https://cld.pt/dl/download/690006ac-e3de-401d-8446-5d2f43730da5/howdoesitwork.png?public=690006ac-e3de-401d-8446-5d2f43730da5?download=true)
 
 From top to bottom:
 
