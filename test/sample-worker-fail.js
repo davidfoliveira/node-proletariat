@@ -36,28 +36,24 @@ worker.start();
 worker.on('work',function(w,handler){
 //	console.log("Worker "+worker.id+" got this work: ",w);
 
-	// Function ? Run it!
+	// OK function
 
-	if ( typeof(w.args) == "function" )
-		return w.args(handler);
-
-
-	// Sleep
-
-	if ( w.args.fn == "sleep" ) {
-		console.log("Sleeping for "+w.args.sleep+" seconds");
-		return setTimeout(function(){
-			handler(null,"I was waiting "+w.args.sleep+" seconds");
-		}, w.args.sleep*1000);
+	if ( w.args == "ok" ) {
+		handler(null,"Its ok");
 	}
 
-	// Something else
+	// Fail function
+
+	else if ( w.args == "fail" ) {
+		handler(new Error("Failed"),null);
+	}
+
+	// Other stuff
 
 	else {
-		setTimeout(function(){
-			handler(null,"THIS IS THE RESULT OF "+w.id+"!")
-		},5000);
+		handler(new Error("Don't know what to do"),null);
 	}
+
 });
 
 

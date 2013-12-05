@@ -100,7 +100,7 @@ Client support this options:
 
 and this methods:
 
-`work(workGroup,options,finishCallback)` for pushing a work or a work group. Supported options are: `timeout` and `priority`.
+`work(workGroup,options,finishCallback)` for pushing a work or a work group. Supported options are: `timeout`, `runTimeout` and `priority`.
 
 `workIndividual(workGroup,options,workCallback,groupCallback)` for pushing a work group and calling workCallback for each finished work and groupCallback when all the work group has finished. Options are the same as for `work()`.
 
@@ -138,9 +138,13 @@ Some systems may need to implement their own assigning function. Example:
 
 ## Timeouts
 
+## Client-side/Global timeout
+
+`client.work()` and `client.workIndividual()` support specifying a `timeout` option, in milliseconds, which will limit the global available time (pushing to manager, assigning, running, ..., returning) for the work(s). It starts counting on the moment that `client.work()` or `client.workIndividual()` are called. If the running time exceeds the `runTimeout` value, the error `{ code: "ECSTO" }` will be returned.
+
 ### Running timeout
 
-`client.work()` and `client.workIndividual()` support specifying a `timeout` option, in milliseconds, which will limit the running time of the work(s). It starts counting at the same moment that the work(s) start running on the worker. If the running time exceeds the `timeout` value, the error `{ code: "ETO" }` will be returned.
+`client.work()` and `client.workIndividual()` support specifying a `runTimeout` option, in milliseconds, which will limit the running time of the work(s). It starts counting at the same moment that the work(s) start running on the worker. If the running time exceeds the `runTimeout` value, the error `{ code: "ETO" }` will be returned.
 
 ### Assigning timeout
 

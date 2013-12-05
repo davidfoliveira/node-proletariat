@@ -1,18 +1,23 @@
 var
 	Proletariat	= require('../lib/proletariat').Client;
-	proletariat	= new Proletariat({host: "127.0.0.1"});
+	proletariat	= new Proletariat({host: "127.0.0.1"}),
 
+	works = [];
 
-proletariat.work(
-	[{bla:"ble"}],
-	{timeout: 2000},
-	function(err,res,w){
-		if ( err ) {
-			console.log("Error running work: ",err);
-			return;
-		}
+// Generate 10 works
 
-		console.log("Result: ",res);
-		process.exit(0);
+for ( var x = 0 ; x < 10 ; x++ ) {
+	works.push({fn:"sleep",sleep:1.300+(x/10)});
+}
+
+proletariat.work(works,{timeout:2000},function(err,res){
+	if ( err ) {
+		console.log("Error: ",err);
+		return;
 	}
-);
+	console.log("Everything done");
+	console.log("res: ",res);
+});
+setTimeout(function(){
+	process.exit(0);
+},5000);
