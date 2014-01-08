@@ -7,10 +7,15 @@ var
 // Generate 10 works
 
 for ( var x = 0 ; x < 10 ; x++ ) {
+/*	works.push(function(handler){
+		var r = 3+3;
+		handler(null,r);
+	});
+*/
 	works.push({fn:"sleep",sleep:1.300+(x/10)});
 }
 
-proletariat.workIndividual(works,{timeout:2000},function(err,res){
+proletariat.workIndividual(works,{timeout:1700},function(err,res){
 	if ( err ) {
 		console.log("Error running work: ",err);
 		return;
@@ -19,12 +24,6 @@ proletariat.workIndividual(works,{timeout:2000},function(err,res){
 	console.log("Result: ",res);
 //	process.exit(0);
 },function(err,res){
-	if ( err ) {
-		console.log("Error: ",err);
-		return;
-	}
 	console.log("Everything done");
-});
-setTimeout(function(){
 	process.exit(0);
-},5000);
+});

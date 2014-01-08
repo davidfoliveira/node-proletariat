@@ -17,7 +17,5 @@ proletariat.work(works,{timeout:2000},function(err,res){
 	}
 	console.log("Everything done");
 	console.log("res: ",res);
-});
-setTimeout(function(){
 	process.exit(0);
-},5000);
+});
