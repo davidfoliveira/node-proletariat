@@ -2,7 +2,7 @@
 
 var
 	Manager	= require('../lib/proletariat').Manager,
-	manager	= new Manager({ DEBUG: true, SACRED_GUARANTEES: false });
+	manager	= new Manager({ DEBUG: false, SACRED_GUARANTEES: false });
 
 // Customize work->worker assign method
 
@@ -19,6 +19,10 @@ manager.workSelectWorker = function(w,workers,availability) {
 	return this.workers[comrades[parseInt(Math.random()*comrades.length)]];
 
 };
+
+manager.on('sysmsg',function(m){
+	console.log("System message: ",m);
+});
 
 // Start
 
