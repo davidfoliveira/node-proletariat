@@ -166,7 +166,12 @@ For keeping this guarantees, you should set the manager option `SACRED_GUARANTEE
 
 ## System messages
 
-The client supports sending system messages to the manager and to all the workers by using `systemMessage(msg,callBack)` method. The supplied message will be sent and `sysmsg` event will be fired on the manager and on all the workers. The `callBack` function will be called only when everybody got the message.
+Clients and workers support sending system messages to the manager and to all other clients and workers by using `systemMessage(msg[,opts,callBack])` method. The supplied message will be sent and `sysmsg` event will be fired on the manager and/or on all the clients/workers. The `callBack` function will be called only when all the recipients get the message.
+
+`systemMessage()` supported options:
+
+`to` - The destination of the message. The supported destinations are: `MANAGER` - for sending only to the manager process; null - for sending to everybody; an available client ID - for sending just to a specific client or worker.
+
 
 Example (manager):
 
@@ -176,6 +181,9 @@ Example (manager):
 
 Example (worker):
 
+	worker.systemMessage({"do":"something"},{},function(){
+	   console.log("Everybody got the message");
+	});
 	worker.on('sysmsg',function(msg){
 	   console.log("System message: ",msg);
 	});
