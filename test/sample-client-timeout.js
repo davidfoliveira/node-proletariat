@@ -10,12 +10,18 @@ for ( var x = 0 ; x < 10 ; x++ ) {
 	works.push({fn:"sleep",sleep:1.300+(x/10)});
 }
 
-proletariat.work(works,{timeout:2000},function(err,res){
-	if ( err ) {
-		console.log("Error: ",err);
-		return;
+proletariat.workIndividual(works,{timeout:2000},
+	function(err,res){
+		console.log("iError: ",err);
+		console.log("ires: ",res);
+	},
+	function(err,res){
+		if ( err ) {
+			console.log("Error: ",err);
+			return;
+		}
+		console.log("Everything done");
+		console.log("res: ",res);
+		process.exit(0);
 	}
-	console.log("Everything done");
-	console.log("res: ",res);
-	process.exit(0);
-});
+);

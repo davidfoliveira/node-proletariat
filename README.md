@@ -102,7 +102,7 @@ Client support this options:
 
 and this methods:
 
-`work(workGroup,options,finishCallback)` for pushing a work or a work group. Supported options are: `timeout`, `runTimeout` and `priority`.
+`work(workGroup,options,finishCallback)` for pushing a work or a work group. Supported options are: `timeout`, `runTimeout`, `assigntimeout` and `priority`.
 
 `workIndividual(workGroup,options,workCallback,groupCallback)` for pushing a work group and calling workCallback for each finished work and groupCallback when all the work group has finished. Options are the same as for `work()`.
 
@@ -142,7 +142,7 @@ Some systems may need to implement their own assigning function. Example:
 
 ## Client-side/Global timeout
 
-`client.work()` and `client.workIndividual()` support specifying a `timeout` option, in milliseconds, which will limit the global available time (pushing to manager, assigning, running, ..., returning) for the work(s). It starts counting on the moment that `client.work()` or `client.workIndividual()` are called. If the running time exceeds the `runTimeout` value, the error `{ code: "ECSTO" }` will be returned.
+`client.work()` and `client.workIndividual()` support specifying a `timeout` option, in milliseconds, which will limit the global available time (pushing to manager, assigning, running, ..., returning) for the work(s). It starts counting on the moment that `client.work()` or `client.workIndividual()` are called. If the running time exceeds the `timeout` value, the error `{ code: "ECSTO" }` will be returned.
 
 ### Running timeout
 
@@ -150,7 +150,7 @@ Some systems may need to implement their own assigning function. Example:
 
 ### Assigning timeout
 
-`client.work()` and `client.workIndividual()` support specifying an `assigntimeout` option, in milliseconds, which will limit the time taken for assigning the work(s) to a worker. If the work(s) take more than the specified time, the error `{ code: 'EATO' }` will be returned and an `assigntimeout` event will be emitted on the manager. 
+`client.work()` and `client.workIndividual()` support specifying an `assigntimeout` option, in milliseconds, which will limit the time taken for assigning the work(s) to a worker. If the manager takes more than the specified time to assign these works to a worker, the error `{ code: 'EATO' }` will be returned to the client and an `assigntimeout` event will be emitted on the manager. 
 
 
 ## Priorities and guarantees
