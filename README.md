@@ -35,6 +35,8 @@ Manager support this options:
 
 `SACRED_GUARANTEES` is for when you are using guaranteed priority slots, choosing to strictly respected guaranteed in case of having too much high priority jobs.
 
+`HOLDSIMILARWORK` is for holding tasks with the same _key property value of a running task. When the running task finishes, the result will be sent to the holding tasks. On this way we can avoid similar tasks to run at the same time.
+
 
 
 # Running workers

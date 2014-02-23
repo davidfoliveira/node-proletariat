@@ -2,7 +2,7 @@
 
 var
 	Manager	= require('../lib/proletariat').Manager,
-	manager	= new Manager({ DEBUG: false, SACRED_GUARANTEES: false });
+	manager	= new Manager({ DEBUG: false, SACRED_GUARANTEES: false, HOLDSIMILARWORK: true });
 
 // Customize work->worker assign method
 
@@ -19,7 +19,9 @@ manager.workSelectWorker = function(w,workers,availability) {
 	return this.workers[comrades[parseInt(Math.random()*comrades.length)]];
 
 };
-
+manager.on('receive',function(w){
+	console.log("Received: ",w.id);
+});
 manager.on('sysmsg',function(m){
 	console.log("System message: ",m);
 });
