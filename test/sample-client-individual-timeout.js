@@ -17,13 +17,17 @@ for ( var x = 0 ; x < 10 ; x++ ) {
 
 proletariat.workIndividual(works,{timeout:1700},function(err,res){
 	if ( err ) {
+		console.log("iError running work: ",err);
+		return;
+	}
+
+	console.log("iResult: ",res);
+},function(err,res){
+	if ( err ) {
 		console.log("Error running work: ",err);
 		return;
 	}
 
-	console.log("Result: ",res);
-//	process.exit(0);
-},function(err,res){
-	console.log("Everything done");
+	console.log("Everything done: ",res);
 	process.exit(0);
 });
