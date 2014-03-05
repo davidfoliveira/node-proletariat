@@ -2,7 +2,7 @@
   "author": "David Oliveira <d.oliveira@prozone.org>",
   "name": "proletariat",
   "description": "An easy-to-use job queuing and distribution system made in/for node. It supports priorities and priority based `QoS'.",
-  "version": "0.4.2",
+  "version": "0.4.3",
   "repository": {
     "type": "git",
     "url": "https://github.com/davidfoliveira/node-proletariat/"
