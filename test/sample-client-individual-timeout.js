@@ -15,13 +15,15 @@ for ( var x = 0 ; x < 10 ; x++ ) {
 	works.push({fn:"sleep",sleep:1.300+(x/10)});
 }
 
-proletariat.workIndividual(works,{timeout:1700},function(err,res){
+proletariat.workIndividual(works,{timeout:1700},function(err,res,task){
 	if ( err ) {
 		console.log("iError running work: ",err);
+		console.log("iTask: ",task);
 		return;
 	}
 
 	console.log("iResult: ",res);
+	console.log("iTask: ",task);
 },function(err,res){
 	if ( err ) {
 		console.log("Error running work: ",err);
